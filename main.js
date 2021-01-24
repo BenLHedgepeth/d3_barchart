@@ -24,14 +24,17 @@ d3.json(request).then((response) => {
     }, []
   );
 
-  let xScale = d3.scaleLinear()
-                  .domain(d3.extent(years))
+  let dates = d3.extent(response.data, (gdp_data) => new Date(gdp_data[0]))
+
+  let xScale = d3.scaleTime()
+                  .domain(dates)
                   .range(0, svg_width - margin);
 
   let xAxis = d3.axisBottom(xScale);
   svg.append("g")
       .attr("transform", `translate(${margin}, ${svg_height - margin})`)
       .call(xAxis)
+
 
   //Define scale and and axis of Y
 
