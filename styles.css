@@ -1,0 +1,28 @@
+
+* {
+  box-sizing: border-box;
+}
+
+.contain {
+  margin: 50px auto 0;;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+svg {
+
+}
+
+
+.inline_rect {
+  display: inline-block;
+}
+
+
+
+.shade:hover {
+  fill: firebrick;
+}
