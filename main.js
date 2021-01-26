@@ -34,7 +34,7 @@ d3.json(request).then((response) => {
 
   const yScale = d3.scaleLinear(
     [0, d3.max(gdp_values)],
-    [0, innerHeight],
+    [innerHeight, 0],
   )
 
   const yAxis = d3.axisLeft(yScale);
@@ -44,14 +44,21 @@ d3.json(request).then((response) => {
     .data(response.data).enter().append('rect')
     .attr('data-date', (d) => d[0]).attr('data-gdp', (d) => d[1])
     .attr('x', (d, i) => i * (innerWidth / response.data.length))
-    .attr('y', (d) => innerHeight - yScale(d[1]))
+    .attr('y', (d) => yScale(d[1]))
     .attr('width', (d) => innerWidth / response.data.length)
-    .attr('height', (d) => yScale(d[1]))
-    .attr('class', 'bar')
+    .attr('height', (d) => innerHeight - yScale(d[1]))
+    .attr('class', 'bar');
 
-  yAxis(g.append('g'));
-  xAxis(g.append('g').attr("transform", `translate(0, ${innerHeight})`));
+  const svg_rects = d3.selectAll("rect").nodes();
+  svg_rects.forEach((rect) => {
+    rect.append("title").attr('id', "tooltip").text(rect.attr("data-gdp"))
+  })
 
-  console.log(xScale.domain())
+  yAxis(g.append('g').attr("id", 'y-axis'));
+  xAxis(
+    g.append('g').attr('id', 'x-axis')
+      .attr("transform", `translate(0, ${innerHeight})`)
+  );
+
 
 })
