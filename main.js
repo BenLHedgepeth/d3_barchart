@@ -2,17 +2,6 @@
 var request = 'https://raw.githubusercontent.com/FreeCodeCamp/'
 request += 'ProjectReferenceData/master/GDP-data.json';
 
-function show_tooltip(event) {
-  // let x, y = d3.pointer(event);
-  const bar = d3.select(this);
-  console.log(bar.node());
-  d3.select("#tooltip").node()
-    .style.cssText = `top: ${d3.pointer(event)[0] - 100}; right: ${d3.pointer(event)[1]}`;
-  d3.select("#tooltip").node().textContent = `${bar.attr("data-date")}`;
-
-
-}
-
 const margin = {
   top: 10,
   right: 50,
@@ -24,6 +13,26 @@ const width = 900;
 const innerWidth = width - margin.right - margin.left;
 const height = 500;
 const innerHeight= height - margin.top - margin.bottom;
+
+function set_tooltip_content(bar) {
+  
+}
+
+function show_tooltip(event) {
+  // let x, y = d3.pointer(event);
+  const bar = d3.select(this);
+  let [x, y] = d3.pointer(event);
+  console.log(x);
+  d3.select("#tooltip").node()
+    .style.cssText = `top: ${innerHeight + 30}; right: ${innerWidth - (x - 265)}`;
+  d3.select("#tooltip").node().textContent = `${bar.attr("data-date")}`;
+}
+
+function hide_tooltip(event) {
+  d3.select('#tooltip').node()
+    .style.cssText = "opacity: 0;"
+}
+
 
 const svg = d3.select(".contain").append('svg')
       .attr('width', width).attr('height', height);
@@ -71,6 +80,7 @@ d3.json(request).then((response) => {
   rects.each(function(rect) {
     d3.select(this)
       .on('mouseover', show_tooltip)
+      .on('mouseout', hide_tooltip)
   })
 
   const p = d3.select(".contain").append("p")

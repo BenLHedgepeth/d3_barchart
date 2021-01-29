@@ -38,6 +38,9 @@ svg {
 
 .tipbox {
   position: absolute;
+  background: pink;
+  opacity: 0.6;
+  padding: .5rem;
 }
 
 text {
