@@ -14,18 +14,31 @@ const innerWidth = width - margin.right - margin.left;
 const height = 500;
 const innerHeight= height - margin.top - margin.bottom;
 
-function set_tooltip_content(bar) {
-  
+
+function curate_label(bar) {
+  const date = new Date(bar.attr("data-date"));
+  const month = date.getUTCMonth() + 1;
+
+  var quarter = (
+    month >= 10 && month <= 12 ? 'Q4' :
+    month >= 7 && month <= 9 ? 'Q3' :
+    month >= 4 && month <= 6 ? 'Q2' : 'Q1'
+  )
+  return `<p>${date.getFullYear()} -
+  ${quarter}<br />$${bar.attr('data-gdp')} billion</p>`
+
 }
 
+
 function show_tooltip(event) {
-  // let x, y = d3.pointer(event);
   const bar = d3.select(this);
   let [x, y] = d3.pointer(event);
-  console.log(x);
+
   d3.select("#tooltip").node()
-    .style.cssText = `top: ${innerHeight + 30}; right: ${innerWidth - (x - 265)}`;
-  d3.select("#tooltip").node().textContent = `${bar.attr("data-date")}`;
+    .style.cssText = `top: ${innerHeight - 30};
+    right: ${innerWidth - (x - 235)}; opacity: 0.6`;
+  const content = curate_label(bar);
+  d3.select("#tooltip").node().innerHTML = content;
 }
 
 function hide_tooltip(event) {
@@ -47,6 +60,9 @@ d3.json(request).then((response) => {
   const dates = response.data.map((x) => new Date(x[0]));
   const gdp_values = response.data.map((x) => x[1]);
 
+  const title = response.name.split(",")[0];
+  const reference = response.description.split("\n")[2];
+
   const xScale = d3.scaleTime(
     d3.extent(dates),
     [0, innerWidth]
@@ -62,7 +78,8 @@ d3.json(request).then((response) => {
 
   g.selectAll("rect")
     .data(response.data).enter().append('rect')
-    .attr('data-date', (d) => d[0]).attr('data-gdp', (d) => d[1])
+    .attr('data-date', (d) => d[0])
+    .attr('data-gdp', (d) => d[1])
     .attr('x', (d, i) => i * (innerWidth / response.data.length))
     .attr('y', (d) => yScale(d[1]))
     .attr('width', (d) => innerWidth / response.data.length)
@@ -76,6 +93,21 @@ d3.json(request).then((response) => {
       .attr("transform", `translate(0, ${innerHeight})`)
   );
 
+  const gTitle = svg.append('g')
+      .attr(
+        "transform",
+        `translate(${margin.left + 15}, ${margin.top + 250}) rotate(270)`
+      )
+      .append("text").text(title)
+      .style('font-size', '16px');
+
+  const gDescription = svg.append('g')
+      .attr(
+        "transform",
+        `translate(${width - innerWidth}, ${height - margin.bottom + 50})`
+      )
+      .append("text").text(reference)
+
   const rects = d3.selectAll('rect');
   rects.each(function(rect) {
     d3.select(this)
@@ -85,6 +117,12 @@ d3.json(request).then((response) => {
 
   const p = d3.select(".contain").append("p")
                   .attr("id", "tooltip")
-                  .attr('class', "tipbox")
+                  .attr('class', "tipbox");
+
+  const body = document.querySelector("body");
+  window.addEventListener("load", () => console.log("Hello"))
+
+
+
 
 })
